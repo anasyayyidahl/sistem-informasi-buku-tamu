@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buku Tamu - BDK Surabaya</title>
+  <meta name="description" content="Buku Tamu Digital-Balai Diklat Surabaya." />
+  <meta name="keywords" content="Buku Tamu-Balai Diklat Surabaya" />
+  <meta name="author" content="BDK Surabaya" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-gray-800 flex flex-col min-h-screen">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-50 bg-[#67AE6E] text-white shadow-md px-6 py-4">
+    <div class="container mx-auto flex items-center justify-between">
+      <img src="logo_bdk.png" alt="Logo BDK" class="w-12 h-12 object-contain">
+      <h1 class="text-xl md:text-2xl font-bold">Buku Tamu - Balai Diklat Keagamaan Surabaya</h1>
+      <div class="w-12 h-12"></div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="container mx-auto px-4 py-8 flex justify-center items-center flex-grow">
+
+    <!-- Form -->
+    <section class="w-full max-w-2xl bg-[#F7FAF8] py-6 px-4 rounded-lg shadow">
+      <!-- Tanggal dan jam real-time -->
+      <div class="text-center mb-4">
+        <p id="tanggalJam" class="text-sm text-gray-700 font-medium bg-yellow-200 rounded px-3 py-1 inline-block shadow-sm"></p>
+      </div>
+
+      <h2 class="text-center text-2xl font-semibold mb-5">Form Kunjungan Tamu</h2>
+      <form id="formTamu" action="proses.php" method="POST" class="space-y-4 text-sm">
+        <div>
+          <label class="block font-medium">Nama Lengkap <span class="text-red-500">*</span></label>
+          <input type="text" name="nama" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div>
+          <label class="block font-medium">Asal Instansi/Lembaga <span class="text-red-500">*</span></label>
+          <input type="text" name="instansi" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div>
+          <label class="block font-medium">Nomor Telepon <span class="text-red-500">*</span></label>
+          <input type="tel" name="nomor_telepon" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div>
+          <label class="block font-medium">Tanggal Kunjungan <span class="text-red-500">*</span></label>
+          <input type="date" name="tanggal" class="w-full border rounded px-3 py-2" required />
+        </div>
+        <div>
+          <label class="block font-medium">Keperluan <span class="text-red-500">*</span></label>
+          <textarea name="keperluan" rows="3" class="w-full border rounded px-3 py-2" required></textarea>
+        </div>
+        <div class="flex justify-center mt-4">
+          <button
+            id="submitBtn"
+            type="submit"
+            class="bg-[#67AE6E] text-white px-6 py-3 rounded-md shadow hover:bg-[#57955D] transition transform"
+          >
+            Kirim Buku Tamu
+          </button>
+        </div>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-[#A0C8A6] text-white">
+    <div class="max-w-7xl mx-auto px-6 py-6">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-2 text-sm">
+        <div class="text-center md:text-left">
+          <p class="font-semibold text-base">Balai Diklat Keagamaan Surabaya</p>
+          <p class="text-white/80">Jl. Ketintang Madya, Surabaya, Indonesia</p>
+        </div>
+        <div class="text-center md:text-right mt-4 md:mt-0">
+          <p class="text-white/70">&copy; 2025 BDK Surabaya. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Popup Terima Kasih -->
+  <div id="popup" class="fixed inset-0 flex items-center justify-center bg-black/50 hidden z-50">
+    <div class="bg-white rounded-xl px-6 py-5 shadow-lg text-center max-w-sm w-full">
+      <h3 class="text-lg font-semibold text-green-600 mb-2">Terima kasih!</h3>
+      <p class="text-gray-600">Data kunjungan Anda telah tercatat.</p>
+      <button onclick="closePopup()" class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+        Tutup
+      </button>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    function updateTanggalJam() {
+      const now = new Date();
+      const optionsTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const tanggal = now.toLocaleDateString('id-ID', optionsTanggal);
+      const jam = now.toLocaleTimeString('id-ID');
+      document.getElementById("tanggalJam").innerText = `${tanggal} • ${jam}`;
+    }
+    setInterval(updateTanggalJam, 1000);
+    updateTanggalJam();
+
+    const form = document.getElementById("formTamu");
+    const submitBtn = document.getElementById("submitBtn");
+    const popup = document.getElementById("popup");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <svg class="animate-spin h-5 w-5 mr-2 inline-block text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+        </svg> Mengirim...`;
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          form.reset();
+          popup.classList.remove("hidden");
+        } else {
+          alert("Gagal mengirim data. Silakan coba lagi.");
+        }
+      } catch (error) {
+        alert("Terjadi kesalahan. Silakan coba lagi.");
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = "Kirim Buku Tamu";
+    });
+
+    function closePopup() {
+      document.getElementById("popup").classList.add("hidden");
+    }
+  </script>
+
+</body>
+</html>
